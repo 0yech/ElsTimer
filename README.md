@@ -14,3 +14,7 @@ Must be run as administrator or it can't register input over the game.*
 - Change keybind in settings.
 - Open wanted timer(s), move it wherever you may feel like.
 - Press binded key to start/restart. "n" is the default key.
+
+# Release
+
+https://github.com/0yech/ElsTimer/releases
