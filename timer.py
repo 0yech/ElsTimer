@@ -2,6 +2,7 @@ import tkinter as tk
 import keyboard
 import configparser
 
+
 class CountdownApp:
     def __init__(self, master, time_limit):
         self.master = master
@@ -31,10 +32,19 @@ class CountdownApp:
         self.key = config.get("Settings", "key", fallback="n")
 
         # Start listening for the configured key globally
-        keyboard.on_press_key(self.key, self.restart_countdown)
+        self.start_keyboard_listener()
+
+        # Periodically check keyboard listener status
+        self.check_keyboard_listener()
 
         # Initial display update
         self.update_display()
+
+    def start_keyboard_listener(self):
+        keyboard.on_press_key(self.key, self.restart_countdown)
+
+    def stop_keyboard_listener(self):
+        keyboard.unhook_all()
 
     def restart_countdown(self, event):
         # Cancel the existing countdown if it's running
@@ -65,7 +75,18 @@ class CountdownApp:
 
         self.master.after(1000, self.update_display)
 
-        # Window movement
+    def check_keyboard_listener(self):
+        # Checks every 5 secs if kb is still listening for inputs
+	# Fixes timer not listening to inputs after some time
+        if not keyboard.is_hooked(self.key):
+            # Restart listener
+            self.stop_keyboard_listener()
+            self.start_keyboard_listener()
+
+        # Time next check (5sec)
+        self.master.after(5000, self.check_keyboard_listener)
+
+    # Window movement
     def start_move(self, event):
         self.x = event.x
         self.y = event.y
@@ -83,7 +104,6 @@ class CountdownApp:
 
 
 if __name__ == "__main__":
-
-        root = tk.Tk()
-        app = CountdownApp(root, 150)  # Change the time limit as needed
-        root.mainloop()
+    root = tk.Tk()
+    app = CountdownApp(root, 150)  # Change the time limit as needed
+    root.mainloop()
